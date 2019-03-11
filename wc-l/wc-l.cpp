@@ -19,25 +19,28 @@ int main(int argc, char** argv ) {
     //    return 1;
     //}
 	
-	cout << "Opening file a.txt\n"; // << argv[1] << "\n";
+	printf("Opening file a.txt\n"); // << argv[1] << "\n";
 	
-	ifstream f("a.txt");
-	
+	FILE* f;
+
     QueryPerformanceFrequency((LARGE_INTEGER *)&freq);// запрашиваем число тиков в 1 сек
 
 
 	QueryPerformanceCounter((LARGE_INTEGER *)&t1);// смотрим время после окончания цикла
 	
+	f = fopen("a.txt", "rb");
+	char * s = new char[5000000];
 	long long lines = 0;
-	while (!f.eof()){
-		getline(f, str);
+	while (!feof(f)){
+		fgets(s, 5000000, f);
 		lines++;
 	}
-	
+	fclose(f);
 	
 	QueryPerformanceCounter((LARGE_INTEGER *)&t2);// смотрим время после окончания цикла
 
-	cout << str << "\n Time spent:" << (t2-t1)/(1.*freq) 
-		 << "\n File  a.txt has " << lines << " lines.";
+	printf("\nTime spent: %.3fsec",(t2-t1)/(1.*freq)); 
+	printf("\nFile  a.txt has %d",lines);
+	printf(" lines.\n");
 	return 0;
 }
