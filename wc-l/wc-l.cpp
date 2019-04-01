@@ -8,11 +8,12 @@
 #include <fstream>
 
 using namespace std;
-
+#define N 4096
 int main(int argc, char** argv ) {
     long long t1, t2, freq;
-	string str;
-	
+	char str[N];
+	DWORD nRead;
+	BOOL bResult;
 	//if (argc == 1) 
     //{
     //    cerr << "Error: need text file\n";
@@ -21,21 +22,31 @@ int main(int argc, char** argv ) {
 	
 	printf("Opening file a.txt\n"); // << argv[1] << "\n";
 	
-	FILE* f;
+	HANDLE f = CreateFile (
+		L"a.txt",
+		GENERIC_READ,
+		FILE_SHARE_READ,
+		NULL,
+		OPEN_EXISTING,
+		FILE_ATTRIBUTE_NORMAL,
+		NULL
+		);
 
     QueryPerformanceFrequency((LARGE_INTEGER *)&freq);// запрашиваем число тиков в 1 сек
 
 
 	QueryPerformanceCounter((LARGE_INTEGER *)&t1);// смотрим время после окончания цикла
 	
-	f = fopen("a.txt", "rb");
-	char * s = new char[5000000];
+	
 	long long lines = 0;
-	while (!feof(f)){
-		fgets(s, 5000000, f);
-		lines++;
-	}
-	fclose(f);
+	do{
+		bResult = ReadFile(f,str, N, &nRead,NULL);
+			for (DWORD i=0; i<nRead; i++)
+				if (str[i] == '\n')
+					lines++;
+	}while (!(bResult && nRead == 0));
+
+	CloseHandle(f);
 	
 	QueryPerformanceCounter((LARGE_INTEGER *)&t2);// смотрим время после окончания цикла
 
